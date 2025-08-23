@@ -1,0 +1,69 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Download Videos and Audios</title>
+  </head>
+  <body>
+    <h1 id="titleHeading">Download Videos and Audios</h1>
+    <div class="inputContainer">
+      <input placeholder="Enter URL 1" type="text" /><br />
+      <input placeholder="Enter URL 2" type="text" /><br />
+      <input placeholder="Enter URL 3" type="text" /><br />
+      <input placeholder="Enter URL 4" type="text" /><br />
+      <input placeholder="Enter URL 5" type="text" /><br />
+    </div>
+    <div class="buttonContainer">
+      <button>Download Videos</button>
+      <button>Download Audios</button>
+    </div>
+  </body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>YouTube Downloader</title>
+  </head>
+  <body>
+    <h2>Enter YouTube URLs (one per line)</h2>
+    <textarea id="urls" rows="6" cols="50"></textarea><br />
+    <button onclick="downloadVideos()">Download</button>
+
+    <p id="status"></p>
+    <a id="downloadLink" style="display: none" download>Download File</a>
+
+    <script>
+      async function downloadVideos() {
+        const urls = document.getElementById("urls").value.trim().split("\n");
+        document.getElementById("status").innerText = "Downloading...";
+
+        const response = await fetch("http://127.0.0.1:8000/download", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ urls: urls }),
+        });
+
+        if (!response.ok) {
+          document.getElementById("status").innerText = "Error downloading.";
+          return;
+        }
+
+        const blob = await response.blob();
+        const link = document.getElementById("downloadLink");
+        link.href = window.URL.createObjectURL(blob);
+        link.style.display = "inline";
+        link.innerText = "Click here to save";
+        document.getElementById("status").innerText = "Ready!";
+      }
+    </script>
+  </body>
+</html>
