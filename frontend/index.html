@@ -43,7 +43,7 @@
 
     <script>
       async function downloadVideos() {
-        const urls = document.getElementById("urls").value.trim().split("\n");
+        const urls = document.getElementById("urls").value.trim();
         document.getElementById("status").innerText = "Downloading...";
 
         const response = await fetch(
