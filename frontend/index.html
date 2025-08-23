@@ -46,11 +46,14 @@
         const urls = document.getElementById("urls").value.trim().split("\n");
         document.getElementById("status").innerText = "Downloading...";
 
-        const response = await fetch("http://127.0.0.1:8000/download", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ urls: urls }),
-        });
+        const response = await fetch(
+          "https://yt-backend-a8z3.onrender.com/download",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: urls }),
+          }
+        );
 
         if (!response.ok) {
           document.getElementById("status").innerText = "Error downloading.";
