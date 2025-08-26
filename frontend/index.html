@@ -29,44 +29,62 @@
 </html> -->
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <title>YouTube Downloader</title>
   </head>
   <body>
-    <h2>Enter YouTube URLs (one per line)</h2>
-    <textarea id="urls" rows="6" cols="50"></textarea><br />
-    <button onclick="downloadVideos()">Download</button>
+    <h1>YouTube Downloader</h1>
 
-    <p id="status"></p>
-    <a id="downloadLink" style="display: none" download>Download File</a>
+    <input
+      type="text"
+      id="urlInput"
+      placeholder="Paste YouTube URL here"
+      size="50"
+    />
+    <button id="downloadBtn">Download</button>
 
     <script>
-      async function downloadVideos() {
-        const urls = document.getElementById("urls").value.trim();
-        document.getElementById("status").innerText = "Downloading...";
-
-        const response = await fetch(
-          "https://yt-backend-a8z3.onrender.com/download",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ urls: urls }),
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", async () => {
+          const url = document.getElementById("urlInput").value.trim();
+          if (!url) {
+            alert("Please enter a YouTube URL!");
+            return;
           }
-        );
 
-        if (!response.ok) {
-          document.getElementById("status").innerText = "Error downloading.";
-          return;
-        }
+          try {
+            const response = await fetch(
+              `http://localhost:8000/download?url=${encodeURIComponent(url)}`
+            );
+            if (!response.ok) {
+              throw new Error("Download failed. Server error.");
+            }
 
-        const blob = await response.blob();
-        const link = document.getElementById("downloadLink");
-        link.href = window.URL.createObjectURL(blob);
-        link.style.display = "inline";
-        link.innerText = "Click here to save";
-        document.getElementById("status").innerText = "Ready!";
-      }
+            // Get filename from header
+            let filename = "video.mp4";
+            const disposition = response.headers.get("Content-Disposition");
+            if (disposition && disposition.includes("filename=")) {
+              filename = disposition.split("filename=")[1];
+            }
+
+            // Convert to Blob
+            const blob = await response.blob();
+
+            // Trigger download with correct filename
+            const a = document.createElement("a");
+            a.href = window.URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          } catch (err) {
+            console.error(err);
+            alert("Something went wrong: " + err.message);
+          }
+        });
     </script>
   </body>
 </html>
